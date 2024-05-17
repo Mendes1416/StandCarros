@@ -1,5 +1,5 @@
 # -> Projeto PSI em Programação
-**Feito em aspx.net**
+**Feito em aspx.net, com sqlserver**
  
 
 ## -> Descrição
