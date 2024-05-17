@@ -1,0 +1,258 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Modelo.Master.cs" Inherits="MendesStand.Modelo"%>
+<!DOCTYPE html>
+
+<html>
+<head runat="server">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+    <!-- Barra de consentimento de Cookies -->
+
+    <style>
+        @media (max-width:600 px) {
+            body {
+                background-color: aquamarine
+            }
+        }
+
+        body {
+            background-color: #eee
+        }
+
+        .cookie-consent {
+            position: fixed;
+            bottom: 0px;
+            width: 100%;
+            height: 45px;
+            color: #fff;
+            line-height: 20px;
+            padding-left: 10px;
+            padding-right: 10px;
+            font-size: 14px;
+            background: #292929;
+            z-index: 120;
+            cursor: pointer;
+            border-radius: 0px;
+            display: flex;
+            align-items: center;
+            justify-content: center
+        }
+
+        .allow-button {
+            height: 20px;
+            width: 104px;
+            color: #fff;
+            font-size: 12px;
+            line-height: 10px;
+            border-radius: 3px;
+            border: 1px solid green;
+            background-color: green
+        }
+    </style>
+
+
+    <title></title>
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body style="background-color: white">
+    <form id="form1" runat="server">
+        <div>
+
+            <!-- NavBar -->
+            <nav class="navbar navbar-inverse">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <a class="navbar-brand" href="#">MendesStand</a>
+                    </div>
+
+                    <ul class="nav navbar-nav">
+
+                        <li class="active"><a href="index.aspx">Home</a></li>
+                        <li><a href="#">Promoções</a></li>
+                        <li><a href="#">Novidades</a></li>
+                        <li><a href="#">Configurador</a></li>
+
+                        <!-- Menu Pendente -->
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">Carros
+                            <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="SUV.aspx?tipologia=SUV">SUV</a></li>
+                                <li><a href="SUV.aspx?tipologia=Coupé">Copê</a></li>
+                            </ul>
+                        </li>
+
+                        <!-- caixa de Pesquisa -->
+                        <li>
+                            <div class="input-group" style="width: 380px; padding-left: 30px; padding-top: 10px">
+                                <input id="txt_pesquisa" type="text" class="form-control" placeholder="Procurar..." runat="server">
+                                <div class="input-group-btn">
+                                    <button id="pesquisa" class="btn btn-default" runat="server" onserverclick="pesquisar_click">
+                                        <i class="glyphicon glyphicon-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+
+                    </ul>
+
+                    <% if (Session["user"] == null && Session["admin"] == null)
+                        { %>
+
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="Registar.aspx"><span class="glyphicon glyphicon-user"></span>Sign Up</a></li>
+                        <li><a href="Login.aspx"><span class="glyphicon glyphicon-log-in"></span>Login</a></li>
+                    </ul>
+
+                    <% }
+                        else
+                        {%>
+
+                    <ul class="nav navbar-nav navbar-right">
+
+                        <%if (Session["user"] != null)
+                            { %>
+
+                        <li>
+                            <a href="carrinho.aspx"><span class="glyphicon glyphicon-shopping-cart"></span>
+                                <span class="badge" style="background-color: red">
+                                    <asp:HiddenField ID="N_produtos_carrinho" runat="server" />
+                                    <%if (N_produtos_carrinho.Value != null)
+                                        {  %>
+                                    <% Response.Write(N_produtos_carrinho.Value);
+                                        }
+                                        else
+                                        {  %>
+                                    <% Response.Write("0");
+                                        }%>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="favorito.aspx"><span class="glyphicon glyphicon-heart"></span></a>
+                        </li>
+                        <%}
+                            else
+                            { %>
+
+                        <li>
+                            <a href="encomendas.aspx"><span class="glyphicon glyphicon-bell"></span>
+                                <asp:HiddenField ID="N_encomendas" runat="server" />
+
+                                <%if (N_encomendas.Value != null)
+                                    {  %>
+                                        <span class="badge" style="background-color: red"/>
+                                        <% Response.Write(N_encomendas.Value);
+                                    }%>
+                                </span>
+                            </a>
+                            
+                                        <span class="badge" style="background-color: red"/>
+                            
+                            <%} %>
+
+                        </li>
+
+                        <!-- Menu da area reservada -->
+
+
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                <% Response.Write(Session["user"]); Response.Write(Session["admin"]);%>
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <img src="/imagens/utilizadores/<%if (Session["user"] != null) Response.Write(Session["user"]); else Response.Write(Session["admin"]);%>.jpg" style="width: 65px; height: 50px; padding-top: 10px; padding-right: 15px; padding-left: 10px" />
+                                    <b>
+                                        <%if (Session["user"] != null)
+                                            { %>
+                                            Cliente
+                                        <%}
+                                            else
+                                            {  %>
+                                            Admin
+                                        <%} %>
+
+                                    </b>
+                                    <hr />
+                                </li>
+
+                                <!-- Testar qual o perfil do utilizador -->
+                                <%if (Session["admin"] != null)
+                                    { %>
+
+                                <li>
+                                    <a href="Produtos.aspx">Gerir Produtos</a>
+                                </li>
+
+                                
+                                <li>
+                                    <a href="Novo_produto.aspx">Inserir Produto</a>
+                                </li>
+
+                                <li>
+                                    <a href="Gerir_utilizadores.aspx">Utilizadores</a>
+                                </li>
+
+                                <li>
+                                    <a href="Encomendas.aspx">Encomendas</a>
+                                </li>
+
+                                <%} %>
+
+                                <% else
+                                    { %>
+                                <li>
+                                    <a href="perfil.aspx">Perfil</a>
+                                </li>
+                                <li>
+                                    <a href="encomendas.aspx">Compras</a>
+                                </li>
+
+                                <%} %>
+                                
+                                <li>
+                                    <a href="Logout.aspx">Sair </a>
+                                </li>
+
+                            </ul>
+
+                        </li>
+
+                    </ul>
+
+
+
+                    <% } %>
+                </div>
+            </nav>
+
+
+            <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+            </asp:ContentPlaceHolder>
+
+            <% HttpCookie autorizacao_cookies = Request.Cookies["Autorizacao"];
+                if (autorizacao_cookies == null)
+                {%>
+            <div class="cookie-consent">
+                <span>Este site usa Cookies para armazenar dados. Autoriza a sua utilização? &nbsp; &nbsp; &nbsp;  </span>
+                <div class=" ml-2 d-flex align-items-center justify-content-center g-2">
+                    <button class="allow-button mr-1" runat="server" onserverclick="AutorizarCookies_ServerClick">Permitir cookies</button>
+                    <button class="allow-button">Cancelar</button>
+                </div>
+            </div>
+            <% } %>
+        </div>
+    </form>
+</body>
+</html>
